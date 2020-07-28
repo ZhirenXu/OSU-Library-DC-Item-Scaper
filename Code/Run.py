@@ -124,8 +124,8 @@ def findNextPage(source, session):
     nextPage = ""
     urlPrefix = "https://library.osu.edu/"
     result = source.find('a', attrs={'rel': 'next'})
-    #print(result['href'])
-    if result != None or result != '':
+    print(result)
+    if (result != None):
         nextPage = urlPrefix + result['href']
         print("Next page of items is founded, processing...")
         html = loadUrlSession(session, nextPage)
