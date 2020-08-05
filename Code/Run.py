@@ -93,6 +93,8 @@ def runProcessParallelLogin(session, urlList, attributeList, outputFile):
                 generateOutput(categoryValue, outputFile, title)
                 print("All pages processed. No more next page.")
                 print("Write into CSV successful.")
+            else:
+                print("No next page for this record")
             print("Successfully web-scraped ", i, " / ", numOfUrl, "records.\n")
             i = i + 1
 
