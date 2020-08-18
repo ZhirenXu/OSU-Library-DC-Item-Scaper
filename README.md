@@ -19,3 +19,5 @@
       pip install MechanicalSoup 
       
       pip install bs4
+## Change
+   Fix the issue which cause scrape failure when related items are more than 10
