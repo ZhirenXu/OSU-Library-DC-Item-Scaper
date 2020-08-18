@@ -93,8 +93,6 @@ def runProcessParallelLogin(session, urlList, attributeList, outputFile):
                 generateOutput(categoryValue, outputFile, title)
                 print("All pages processed. No more next page.")
                 print("Write into CSV successful.")
-            else:
-                print("No next page for this record")
             print("Successfully web-scraped ", i, " / ", numOfUrl, "records.\n")
             i = i + 1
 
@@ -125,11 +123,10 @@ def generateOutput(listOfRows, output, masterFileName):
 def findNextPage(source, session):
     nextPage = ""
     urlPrefix = "https://library.osu.edu/"
-    result = source.find('a', attrs={'rel': 'next'})
-    print(result)
-    if (result != None):
-        nextPage = urlPrefix + result['href']
-        print("Next page of items is founded, processing...")
+    result = source.find_all('a', attrs={'rel': 'next'})
+    if (result != None and len(result) > 1):
+        nextPage = urlPrefix + result[0]['href']
+        print("Next page of files is found, processing...")
         html = loadUrlSession(session, nextPage)
         nextPageSoup = BeautifulSoup(html.text, 'html.parser')
         return nextPageSoup
