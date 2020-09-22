@@ -19,6 +19,7 @@ def findCategoryValue(source, attributeList, ID):
     i = 0
     
     listOfResult = extractValue(source, attributeList)
+    #print("list of result: ", listOfResult)
     lenOfResult = len(listOfResult)
     #print(lenOfResult)
     # for situation when there is only one recordw, which will add
@@ -92,10 +93,17 @@ def zipList(target):
     if(len(target) == 2):
         while(len(target) > 0):
             try:
-                zippedElement.append(target.pop(0)[0])
+                element = target.pop(0)
+                if len(element) > 1:
+                    while element != []:
+                        zippedElement.append(element.pop(0))
+                else:
+                    zippedElement.append(element[0])
             except:
                 print("ERROR: ", target)
                 sys.exit(0)
+        combined.append(zippedElement)
+        zippedElement = []
     else:
         while(len(target) > 0):
             for singleList in target:
@@ -111,5 +119,5 @@ def zipList(target):
             #print(zippedElement)
             combined.append(zippedElement)
             zippedElement = []
-
+    #print(combined)
     return combined

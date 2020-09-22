@@ -1,5 +1,6 @@
 import urllib.request
 import concurrent.futures
+import sys
 from bs4 import BeautifulSoup
 from Code import FindObjectTitle
 from Code import Find
@@ -78,21 +79,32 @@ def runProcessParallelLogin(session, urlList, attributeList, outputFile):
             ID = url[(len(url) - 9):]
             # opened url
             html = future.result()
+            if html.status_code != 200:
+                print("\nError: Could not open page. Page url: ", url)
+                print("press enter to exit.")
+                input()
+                sys.exit(0)
             # load target digital collection in html parser
             soup = BeautifulSoup(html.text, 'html.parser')
             #print(nextPageUrl)
             # find collection title
-            title = FindObjectTitle.findObjectTitle(soup)
-            # find attributes value
-            categoryValue = Find.findCategoryValue(soup, attributeList, ID)
-            #print(categoryValue)
+            try:
+                title = FindObjectTitle.findObjectTitle(soup)
+                # find attributes value
+                categoryValue = Find.findCategoryValue(soup, attributeList, ID)
+            except:
+                print("Error happens. Processing Url: ", url)
+                print("Press enter to exit.")
+                input()
+                sys.exit(0)
             generateOutput(categoryValue, outputFile, title)
             nextPageSoup = findNextPage(soup, session)
-            if nextPageSoup != None:
+            while nextPageSoup != None:
                 categoryValue = Find.findCategoryValue(nextPageSoup, attributeList, ID)
                 generateOutput(categoryValue, outputFile, title)
-                print("All pages processed. No more next page.")
                 print("Write into CSV successful.")
+                nextPageSoup = findNextPage(nextPageSoup, session)
+            print("All pages processed. No more next page.")
             print("Successfully web-scraped ", i, " / ", numOfUrl, "records.\n")
             i = i + 1
 
@@ -126,6 +138,7 @@ def findNextPage(source, session):
     result = source.find_all('a', attrs={'rel': 'next'})
     if (result != None and len(result) > 1):
         nextPage = urlPrefix + result[0]['href']
+        #print("next page: ", nextPage)
         print("Next page of files is found, processing...")
         html = loadUrlSession(session, nextPage)
         nextPageSoup = BeautifulSoup(html.text, 'html.parser')
