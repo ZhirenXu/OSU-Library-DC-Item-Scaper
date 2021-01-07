@@ -4,12 +4,21 @@
 # @param    valueList
 #           a list contain contents in each <li> tag, in here we just need to add item's title
 def findObjectTitle(source):
-    value = ""
-    title = ""
+    value = "null"
     # delete front/back whitespace and add to valueList
-    tag = source.find('title')
-    value += tag.string.split("|", 3)[1]
-    title = value[1:len(value) - 1]
+    tag = source.find("div", "col-sm-8")
+    try:
+        h2 = tag.contents[1]
+        #h2 is a list, format as: ['\\n', <h2>The Lantern, Ja...span></small>\n</h2>, '\\n']
+        value = h2.contents[0].string
+        try:
+            index = value.index("\n")
+            value = value[:index]
+        except:
+            value = value
+            
+    except:
+        print("Fail to get record title!")
 
-    return title
-    
+
+    return value

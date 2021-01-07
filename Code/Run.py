@@ -65,7 +65,6 @@ def runProcessParallelLogin(session, urlList, attributeList, outputFile):
     categoryValue = []
     i = 1
 
-    #urlList = GetUrl.generateParentUrl(idList)
     numOfUrl = len(urlList)
     print("There are ", numOfUrl, " records in the input file.\n")
     print("Proceeding......\n")
@@ -86,10 +85,13 @@ def runProcessParallelLogin(session, urlList, attributeList, outputFile):
                 sys.exit(0)
             # load target digital collection in html parser
             soup = BeautifulSoup(html.text, 'html.parser')
-            #print(nextPageUrl)
             # find collection title
             try:
                 title = FindObjectTitle.findObjectTitle(soup)
+            except:
+                print("Fail to find title. Process URL: ", url)
+                title = "null"
+            try:
                 # find attributes value
                 categoryValue = Find.findCategoryValue(soup, attributeList, ID)
             except:
@@ -116,10 +118,8 @@ def runProcessParallelLogin(session, urlList, attributeList, outputFile):
 # @param    masterFileName
 #           Name of the master file which contains items 
 def generateOutput(listOfRows, output, masterFileName):
-    #print(listOfRows)
     for row in listOfRows:
         row.insert(1, masterFileName)
-        #print(row)
         if len(row) > 1:
             SimpleCSV.writeCSV(row, output)
 
@@ -138,7 +138,6 @@ def findNextPage(source, session):
     result = source.find_all('a', attrs={'rel': 'next'})
     if (result != None and len(result) > 1):
         nextPage = urlPrefix + result[0]['href']
-        #print("next page: ", nextPage)
         print("Next page of files is found, processing...")
         html = loadUrlSession(session, nextPage)
         nextPageSoup = BeautifulSoup(html.text, 'html.parser')
